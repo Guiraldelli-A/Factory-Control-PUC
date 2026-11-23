@@ -120,3 +120,18 @@ Liste até três funcionalidades extras para implementar somente depois que a ve
 - Melhoria 1: Animações simples das máquinas e efeitos sonoros.
 - Melhoria 2: Novas fases com metas de produção progressivamente maiores.
 - Melhoria 3: Registro da melhor pontuação em arquivo local.
+
+## 15. Atualizações após a Entrega 1 (Entrega 2 — 22/11/2026)
+
+O conceito, o objetivo e as regras principais foram mantidos. Durante a implementação e os testes de balanceamento, foram feitos os seguintes ajustes:
+
+- **Tempo da partida:** 90 segundos (com 120 s a partida ficava fácil demais e o tempo não era um desafio).
+- **Desgaste:** cada máquina ligada acumula desgaste; acima de 40% ela pode quebrar e perde o produto em andamento.
+- **Dois tipos de manutenção:** revisão preventiva (8 recursos) e conserto após a quebra (15 recursos). Assim, cuidar das máquinas antes que quebrem é a melhor estratégia, e a IA "acerta" quando sugere revisões em máquinas desgastadas.
+- **Recomendações da IA:** cerca de 30% das sugestões são inadequadas (por exemplo, revisar uma máquina nova ou desligar uma máquina saudável). O jogador tem 8 segundos para aceitar ou rejeitar; aceitar uma sugestão ruim aplica o efeito negativo na partida.
+- **Pontuação e recorde:** produtos, decisões corretas/erradas sobre a IA e bônus de vitória; o recorde é salvo em `data/recorde.txt`.
+- **Telas:** tela inicial com as regras, tela de jogo e tela de resultado.
+
+## 16. Declaração de originalidade
+
+Declaramos que o Factory Control é uma proposta original do grupo, criada para esta disciplina e não reaproveitada de semestres anteriores. O projeto parte do template oficial da disciplina, e os recursos externos utilizados (bibliotecas, ferramentas e apoio de assistente de IA) estão identificados na seção "Recursos externos e créditos" do `README.md`.

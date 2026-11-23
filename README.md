@@ -1,8 +1,8 @@
 # Factory Control
 
-Projeto prático da disciplina de **Introdução a Algoritmos**, desenvolvido em **Python e Pygame**.
+Projeto prático da disciplina de **Introdução a Algoritmos** (PUC Minas), desenvolvido em **Python e Pygame**.
 
-**Situação do projeto:** fase de planejamento (Ponto de Controle 01). As funcionalidades descritas abaixo são previstas para a versão final e ainda não representam um jogo implementado.
+**Situação do projeto:** Entrega 2 — versão parcial **executável e jogável** (22/11/2026). O jogo já tem início, partida completa, IA de recomendações, vitória/derrota, pontuação, recorde em arquivo e testes automatizados. Os próximos passos estão em [`docs/roteiro.md`](docs/roteiro.md).
 
 ## Integrantes do grupo
 
@@ -10,92 +10,129 @@ Projeto prático da disciplina de **Introdução a Algoritmos**, desenvolvido em
 - Luiz Eduardo Figueiredo Campos
 - Caio Utsch Pedra
 
-## Estrutura do projeto
-
-A organização inicial segue o template oficial da disciplina:
-
-- `main.py`: ponto de entrada da aplicação.
-- `src/`: código-fonte principal do jogo (loop, regras, interface e dados).
-- `assets/`: imagens, fontes e sons, caso sejam utilizados.
-- `data/`: arquivos persistentes, como recordes, caso sejam implementados.
-- `tests/`: testes unitários com `pytest`.
-- `docs/`: documentação, incluindo a proposta inicial do jogo.
-
 ## Descrição do jogo
 
-**Factory Control** será um jogo 2D de gerenciamento de uma pequena fábrica. O jogador acompanhará uma linha de produção e controlará máquinas por meio de cliques do mouse, decidindo quando iniciar a produção e quando realizar manutenção.
+**Factory Control** é um jogo 2D de gerenciamento de uma pequena fábrica com três máquinas. O jogador liga e desliga as máquinas, faz manutenção e administra recursos limitados para cumprir uma meta de produção dentro do tempo.
 
-A fábrica terá recursos limitados, e as máquinas poderão apresentar falhas. Um sistema de recomendações automáticas, representando uma aplicação simples de inteligência artificial na indústria, poderá sugerir ações. Algumas recomendações poderão não ser adequadas; o jogador terá de avaliar a situação antes de aceitá-las. O objetivo é destacar a importância da **supervisão humana e do uso responsável da IA**.
+Um **Assistente de IA** dá sugestões durante a partida, sempre com alta "confiança" — mas cerca de **30% das sugestões estão erradas**. O jogador precisa conferir o estado real das máquinas antes de aceitar ou rejeitar cada sugestão. Aceitar uma sugestão ruim tem consequências reais na partida (gasta recursos, para a produção). O objetivo é mostrar a importância da **supervisão humana e do uso responsável da IA**.
 
-O sistema de recomendações será simulado com regras de programação, sem necessidade de treinar uma IA real.
+A IA é **simulada com regras** (condicionais, listas e dicionários), sem treinamento de modelos.
 
-## Objetivo do jogador
+## Tema: IA no Cotidiano e Uso Responsável
 
-Produzir **10 produtos** antes do fim do tempo, administrando os recursos disponíveis e evitando que problemas nas máquinas interrompam a produção. Os valores poderão ser ajustados durante o desenvolvimento e os testes.
+Recorte escolhido: **confiabilidade de sistemas de recomendação na indústria**. O tema afeta diretamente as regras:
 
-## Regras do jogo
+- as sugestões da IA alteram o estado da fábrica quando aceitas;
+- decisões corretas (aceitar sugestão boa / rejeitar sugestão ruim) somam pontos e decisões erradas tiram pontos;
+- o painel **Supervisão Humana** mostra quantos erros da IA o jogador detectou;
+- a tela final reforça que sistemas de IA podem errar com muita confiança.
 
-- A partida começará com **100 unidades de recursos** e um tempo limitado.
-- O jogador poderá clicar nas máquinas para iniciar ações de produção ou manutenção.
-- Produzir itens consumirá recursos; cada produto concluído aumentará o progresso da partida.
-- As máquinas poderão apresentar falhas e precisar de manutenção para voltar a produzir normalmente.
-- O sistema automatizado poderá sugerir decisões, mas caberá ao jogador avaliá-las e escolher como agir.
-- A vitória ocorrerá ao fabricar 10 produtos dentro do tempo previsto. A partida terminará sem vitória se o tempo acabar ou se os recursos necessários se esgotarem antes de atingir a meta.
+## Objetivo
+
+Fabricar **10 produtos em 90 segundos** sem esgotar os recursos.
+
+## Regras
+
+| Regra | Valor |
+|---|---|
+| Recursos iniciais | 100 |
+| Tempo da partida | 90 s |
+| Meta | 10 produtos |
+| Tempo de produção (por máquina ligada) | 12 s por produto |
+| Custo de cada produto | 6 recursos |
+| Desgaste | Sobe 2% por segundo enquanto a máquina está ligada |
+| Falha | Acima de 40% de desgaste a máquina pode quebrar (o risco cresce com o desgaste) e perde o produto em andamento |
+| Revisão preventiva (máquina funcionando) | 8 recursos, 3 s, zera o desgaste |
+| Conserto (máquina quebrada) | 15 recursos, 3 s, zera o desgaste |
+| Sugestões da IA | A cada ~10 s; o jogador tem 8 s para responder; ~30% são inadequadas |
+
+- **Vitória:** fabricar 10 produtos dentro do tempo.
+- **Derrota:** o tempo acabar, ou os recursos não serem suficientes para continuar produzindo.
+- **Pontuação:** 100 por produto + 50 por decisão correta − 30 por decisão errada; na vitória, soma os recursos restantes e 2 pontos por segundo restante. O recorde fica salvo em `data/recorde.txt`.
+
+Todos os valores ficam em `src/config.py` e podem ser ajustados.
 
 ## Controles
 
-- **Mouse (clique esquerdo):** selecionar máquinas e acionar botões de produção, manutenção e decisões.
-- **ESC:** sair do jogo, se esse comando for implementado na interface final.
+- **Mouse (clique esquerdo):**
+  - clicar na máquina ou em **Ligar/Desligar** liga ou desliga a máquina;
+  - **Revisar / Consertar** inicia a manutenção;
+  - **Aceitar / Rejeitar** responde à sugestão do Assistente IA.
+- **ENTER ou clique:** começar a partida (tela inicial).
+- **R ou clique:** jogar novamente (tela final).
+- **ESC:** sair do jogo.
 
-Não haverá personagem controlado por teclado: a interação principal será feita diretamente com a interface da fábrica.
+## Como executar
 
-## Como executar o projeto
-
-> **PC01:** nesta etapa, o projeto está em planejamento. Os comandos abaixo serão usados para executar o jogo conforme a implementação avançar.
-
-### 1. Clonar o repositório
-
-No GitHub do grupo, clique em **Code**, copie a URL HTTPS e use:
+Requisitos: **Python 3.10+** (testado com Python 3.12 e Pygame 2.6).
 
 ```bash
-git clone URL_DO_REPOSITORIO_DO_GRUPO
+git clone https://github.com/Guiraldelli-A/Factory-Control-PUC.git
 cd Factory-Control-PUC
 pip install -r requirements.txt
 python main.py
 ```
 
-Se o nome da pasta criada pelo clone for diferente, ajuste o comando `cd`.
+> No Windows, se o comando `python` não for encontrado, instale o Python pelo site oficial marcando a opção **"Add python.exe to PATH"**.
 
 ## Como executar os testes
-
-Os testes automatizados serão desenvolvidos ao longo do projeto, principalmente para verificar regras de produção, consumo de recursos, manutenção e condições de vitória ou derrota.
 
 ```bash
 python -m pytest
 ```
 
+Os testes ficam em `tests/test_logica.py` e cobrem produção, consumo de recursos, desgaste e falhas, manutenção, recomendações da IA, decisões do jogador, vitória/derrota, pontuação e leitura/escrita do recorde.
+
+## Estrutura do projeto
+
+Organização baseada no template oficial da disciplina:
+
+| Caminho | Conteúdo |
+|---|---|
+| `main.py` | Ponto de entrada (`python main.py`) |
+| `src/config.py` | Tela, cores, regras e caminhos de arquivos |
+| `src/funcoes.py` | Regras do jogo (sem Pygame, testáveis com pytest) |
+| `src/interface.py` | Desenho das telas, botões e painéis |
+| `src/jogo.py` | Loop principal: eventos, atualização e desenho |
+| `src/dados.py` | Leitura e gravação do recorde |
+| `src/sprites.py` | Recorte de spritesheet (do template; ainda não utilizado) |
+| `data/` | Arquivos de dados (`recorde.txt`) |
+| `tests/` | Testes automatizados com pytest |
+| `docs/` | Proposta (`proposta.md`) e roteiro de implementação (`roteiro.md`) |
+
+### Conceitos da disciplina utilizados
+
+Variáveis e constantes, condicionais, laços (`for`/`while`), **listas** (máquinas, sugestões), **dicionários** (cada máquina, estado da partida, recomendação), **tuplas** (cores, retorno de `iniciar_manutencao`), funções com docstrings, modularização em arquivos, **leitura e escrita de arquivo** (recorde) e **testes** com pytest.
+
 ## Checklist de entregas
 
-### Ponto de Controle 01 — Proposta inicial
+### Entrega 1 — Proposta (15/11/2026)
 
-- [x] Definir o conceito, o objetivo e as regras previstas do jogo.
-- [x] Identificar os três integrantes do grupo.
-- [x] Atualizar o README com o planejamento do Factory Control.
-- [X] Conferir se o arquivo `docs/proposta.MD` (ou `docs/proposta.md`, se renomeado) está preenchido no repositório.
-- [X] Baixar o repositório completo em ZIP e enviá-lo pelo Canvas.
+- [x] Conceito, objetivo e regras previstas.
+- [x] Integrantes identificados.
+- [x] `docs/proposta.md` preenchido.
+- [x] ZIP enviado pelo Canvas.
 
-### Etapas posteriores — Desenvolvimento
+### Entrega 2 — Versão parcial executável (22/11/2026)
 
-- [ ] Implementar a interface e os controles com o mouse.
-- [ ] Implementar produção, recursos e manutenção.
-- [ ] Implementar as recomendações automáticas e decisões do jogador.
-- [ ] Implementar vitória, derrota e encerramento.
-- [ ] Criar e executar testes com `pytest`.
-- [ ] Revisar a documentação e testar o jogo completo.
+- [x] Janela do Pygame, loop principal e controles com mouse.
+- [x] Produção, recursos, desgaste, falhas e manutenção.
+- [x] Recomendações automáticas da IA com Aceitar/Rejeitar.
+- [x] Vitória, derrota, pontuação e recorde em arquivo.
+- [x] Testes com pytest.
+- [ ] ZIP enviado pelo Canvas.
 
-## Observações para os alunos
+### Entrega 3 — Versão final (29/11/2026)
 
-- O projeto será desenvolvido a partir do template oficial da disciplina.
-- A versão inicial será simples e funcional, priorizando as regras e a jogabilidade, não a complexidade visual.
-- O grupo deverá organizar o código em funções e módulos, documentar decisões importantes e registrar a origem e as licenças de eventuais assets externos.
-- As características descritas neste README são **planejadas** e poderão ser refinadas durante a implementação.
+- [ ] Balanceamento a partir de testes com jogadores.
+- [ ] Melhorias de interface (ver `docs/roteiro.md`).
+- [ ] README e proposta revisados.
+- [ ] Teste completo do jogo e envio do ZIP.
+
+## Recursos externos e créditos
+
+- Estrutura de pastas, `main.py`, `src/dados.py`, `src/sprites.py` e `assets/imagens/spritesheet.bmp`: [template oficial da disciplina](https://github.com/ICEI-PUC-Minas-PPL-CDIA/IntroAlgs_pygame_template).
+- Biblioteca [Pygame](https://www.pygame.org/) (licença LGPL).
+- Fontes: fontes do sistema operacional (Segoe UI/Arial), carregadas com `pygame.font.SysFont`.
+- Todos os elementos visuais do jogo (máquinas, engrenagens, barras e painéis) são desenhados com formas geométricas do próprio Pygame.
+- Desenvolvimento com apoio do assistente de IA Claude (Anthropic) para planejamento, código e testes; o código foi revisado e testado pelo grupo.
